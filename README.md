@@ -1,0 +1,1 @@
+Script for mask calculation in the aim of analog filters design
