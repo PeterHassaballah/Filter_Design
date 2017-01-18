@@ -11,7 +11,7 @@ tipo = 1;
 
 A_stop_band = 30; % i valori devono essere inseriti in decibel 
 
-A_band_pass = 1;   % i valori devono essere inseriti in decibel 
+A_band_pass = 3;   % i valori devono essere inseriti in decibel 
 
 w_stop_band = 20000; % valore di frequenza non normalizzato
 
@@ -61,6 +61,7 @@ Omega_0_min = Omega_band_pass/(eps_bp^(1/filter_order));
 
 fprintf('The frequency must match the required attenuation index. \nPlease choose one pole frequency between %d and %d\n',Omega_0_min,Omega_0_MAX);
 Omega_0=input('Insert the chosen Omega_O: ');
+%Omega_0 = 1.12;
 %% Grafico filtro normalizzato
 
 x_band_pass = [0 0 Omega_band_pass Omega_band_pass]; %settate le x per il quadrato limite del band_pass
@@ -71,44 +72,26 @@ y_stop_band = [1 1-10^((-A_stop_band)/20) 1-10^((-A_stop_band)/20) 1]; %settate 
 
 Omega = linspace(0,Omega_stop_band+3,100);
 H_butt = sqrt(1./(1+(Omega/Omega_0).^(2*filter_order)));
-
+subplot(2,1,1)
 plot(x_band_pass,y_band_pass);
 hold on
 plot(x_stop_band,y_stop_band);
 hold on
 plot(Omega,H_butt);
-%axis([0 10 -40 10])
+axis([0 Omega_stop_band+3 0 1.001])
+
+[z,p,k] = buttap(filter_order);          % Butterworth filter prototype
+[theta, rho] = cart2pol(real(p), imag(p));
+subplot(2,1,2)
+polarplot(theta,rho,'o')
+
+%TODO Ladder implementation
 
 %%
-
-
-
-
 elseif tipo == 0 
     fprintf('tipo scelto: Chebishev\n');
 end
-    
-% 
 
-k = Omega_band_pass/Omega_stop_band; 
-
-%
-
-k_eps = eps_bp/eps_sb;
-
-% filter order
-
-filter_order = log(k_eps)/log(k);
-        
-filter_order = ceil(filter_order); % approssimazione all'intero successivo 
-
-% selezione della frequenza di taglio 
-
-Omega_0_MAX = Omega_stop_band/(eps_sb^(1/filter_order));
-
-Omega_0_min = Omega_band_pass/(eps_bp^(1/filter_order));
-
-fprintf('The frequency must match the required attenuation index. \nPlease choose one pole frequency between %d and %d\n',Omega_0_min,Omega_0_MAX);
 
 
 
