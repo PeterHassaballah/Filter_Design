@@ -11,7 +11,7 @@ tipo = 1;
 
 A_stop_band = 30; % i valori devono essere inseriti in decibel 
 
-A_band_pass = 1;   % i valori devono essere inseriti in decibel 
+A_band_pass = 0.25;   % i valori devono essere inseriti in decibel 
 
 w_stop_band = 20000; % valore di frequenza non normalizzato
 
@@ -38,6 +38,49 @@ if tipo == 1
     % stop band attenuation index
 
     eps_sb = (10^(A_stop_band/10)-1)^(1/2);
+
+    % 
+
+k = Omega_band_pass/Omega_stop_band; 
+
+%
+
+k_eps = eps_bp/eps_sb;
+
+% filter order
+
+filter_order = log(k_eps)/log(k);
+        
+filter_order = ceil(filter_order); % approssimazione all'intero successivo 
+
+% selezione della frequenza di taglio 
+
+Omega_0_MAX = Omega_stop_band/(eps_sb^(1/filter_order));
+
+Omega_0_min = Omega_band_pass/(eps_bp^(1/filter_order));
+
+fprintf('The frequency must match the required attenuation index. \nPlease choose one pole frequency between %d and %d\n',Omega_0_min,Omega_0_MAX);
+Omega_0=input('Insert the chosen Omega_O: ');
+%% Grafico filtro normalizzato
+
+x_band_pass = [0 Omega_band_pass Omega_band_pass];
+y_band_pass = [(1-A_band_pass) (1-A_band_pass) 0 0];
+
+x_stop_band = [];
+y_stop_band = [];
+
+
+Omega = linspace(0,Omega_stop_band+3,100);
+H_butt = sqrt(1./(1+(Omega/Omega_0).^(2*filter_order)));
+
+hold on
+plot(x_band_pass,y_band_pass);
+
+plot(Omega,H_butt);
+%%
+
+
+
 
 elseif tipo == 0 
     fprintf('tipo scelto: Chebishev\n');
