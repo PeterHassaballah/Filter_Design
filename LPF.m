@@ -90,7 +90,43 @@ polarplot(theta,rho,'o')
 %%
 elseif tipo == 0 
     fprintf('tipo scelto: Chebishev\n');
+    % filter order
+    filter_order = acosh(1/k_eps)/acosh(1/k);
+    filter_order = ceil(filter_order);
+
+    % bp_edge or sb_edge matching
+    
+    %pole calculation
+    % Gamma = ((1+sqrt(1+eps_bp^2))/eps_bp);
+    % for i:1:filter_order
+    % [theta[i], rho[i]] = cart2pol((real(p), imag(p));
+    % end
+
+% Graph plot
+x_band_pass = [0 0 Omega_band_pass Omega_band_pass]; %settate le x per il quadrato limite del band_pass
+y_band_pass = [0 10^((-A_band_pass)/20) 10^((-A_band_pass)/20)  0]; %settate le y per il quadrato limite del band_pass
+
+x_stop_band = [Omega_stop_band Omega_stop_band (Omega_stop_band+3) (Omega_stop_band+3)]; %settate le x per il quadrato limite del band_pass
+y_stop_band = [1 10^((-A_stop_band)/20) 10^((-A_stop_band)/20) 1]; %settate le y per il quadrato limite del band_pass
+
+Omega = linspace(0,Omega_stop_band+3,100);
+Cn = cosh(filter_order*acosh(Omega/Omega_band_pass));
+H_cheb = sqrt(1./(1+eps_bp^2*Cn.^2));
+subplot(2,1,1)
+plot(x_band_pass,y_band_pass);
+hold on
+plot(x_stop_band,y_stop_band);
+hold on
+plot(Omega,H_cheb);
+axis([0 Omega_stop_band+3 0 1.001])
+
+% [z,p,k] = chebp(filter_order);          % Chebyshev filter prototype
+% [theta, rho] = cart2pol(real(p), imag(p));
+% subplot(2,1,2)
+% polarplot(theta,rho,'o')
+
 end
+
 
 
 
